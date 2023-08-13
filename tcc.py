@@ -9,13 +9,13 @@ import numpy as np
 # https://github.com/nightscout/cgm-remote-monitor/wiki
 # http://www.nightscout.info/
 # api documentação https://nsday.fly.dev/api-docs
-
 # configurações de visualização
 pd.set_option('display.max_columns', None)
 
 # clientes
-customers = ['nsday', 'nssamara', 'nsjordana', 'nsarnaldo', 'nsaisha', 'nscamila', 'nsdaniele', 'nsariane', 'nsanaxavier', 'samuelgarcia2011', 'giovannaruggiero', 'miaomiaogisele', 'luishenriquedm1', 'nsaldicleide', 'miaomiaofabiana', 'jvnightscout', 'nsjoao', 'nsalyson', 'nspanassi', 'nsdaiana', 'alicelyra', 'glicemiaslavinia', 'nsraquel', 'gabrielhrocha', 'nskarla', 'njorge', 'ayslan', 'leticia', 'nightscoutnery', 'enzodetoledo', 'camila', 'ariele', 'nsfernando', 'nselise', 'miaomiaojoana', 'nsraissa', 'ccwerner', 'luizabfroes', 'anabeatriz', 'nsandreia', 'nspaula', 'nstaysla', 'vitorpassos', 'nsrose', 'nslavinia', 'nsguilherme', 'nsfabiola', 'lauraspinh0', 'cgmleonardo', 'nsluciano', 'nsduarte', 'nightscoutadriana', 'isabelamota', 'nightscoutderi', 'nstatiane', 'vividm', 'nshelenice', 'miaomiaomaria', 'nsjeferson', 'nscecilia', 'nightscoutedilene', 'glicemianathan', 'nsgisellem', 'nsamanda', 'alinebrag', 'glicemiafabiana', 'nsrita', 'mancinimiguel', 'diabetestipo1prv', 'nightscoutluciana', 'angelina2017dm1', 'catarinagerotto', 'luccafabiano', 'benicio', 'gabrieldamascena', 'nightscoutluiz', 'nskelly', 'nsgabriela', 'nightscoutangela', 'nightscoutaline', 'nsthaizy', 'nightscoutsueli', 'nightscoutkaty', 'nightscoutwelen', 'rayanne', 'miaomiaohellen', 'kellenfernanda', 'nightscoutpriscila', 'nightscoutrodrigo', 'nightscoutancelmo', 'nightscoutjulia', 'nsmiriam', 'nsadriana', 'barbaragomespca', 'emanupfsilva', 'nightscoutmirela', 'grazielee', 'nightscoutrenata', 'luisasantos', 'samuelmuzi', 'nightscoutlili', 'joaopedrojp', 'gabrieldm1', 'hadassa', 'nsfatima', 'nightscouttipaldi', 'claramendesdm1', 'nsjoana', 'nstalita', 'nspedro', 'nslarissa', 'emanuelle', 'waniadias', 'miaomiaovalentina', 'guilhermelucas2015', 'miaomiaojose', 'eduardalhul12', 'icaroguilherme', 'alicedocinho', 'anakarine', 'nsluciana', 'nsalinecardoso', 'nspaulabosio', 'nsdamicheline', 'nsmairteixeira', 'nscamilap', 'nscarlos', 'nsrenato', 'nslorena', 'nsanaluiza', 'nselaine', 'nsgraziela', 'nsacacio', 'nsgabriel', 'nsjosecarlos', 'nskristine', 'thaleslourenci', 'nsveri', 'alice', 'nseulimar', 'nsedivania', 'nsdaguia', 'nseuclides', 'nsanacristina', 'nsrenatasousa', 'nightscoutjosy', 'nsinaura', 'nsarmenia', 'nsluana', 'nsbernardo', 'joaopinheiro', 'nsfabianaalves', 'nsarthur', 'nsmarciele', 'nsiracema', 'nsnoadia', 'nsdebs', 'nsestefania', 'nskenia', 'nsdanila', 'nsalexandre', 'nspaulapenna', 'nsnice', 'nsfabricia', 'nsandressa', 'nightscoutnatalia', 'nssheila', 'nspalmeida', 'nsneusa', 'nscarol', 'nslucianamaia', 'nsevandro', 'nightscoutclaudio', 'nsambiel', 'nsmaneca', 'nssalome', 'nsvanessamiranda', 'aninhafree', 'nslucasnogueira', 'nsalinepaiva', 'clarinha', 'rodabete', 'nightscoutfatima', 'nsalexandref', 'nanda10', 'arthur03', 'nsmelissa', 'nspittol', 'nsduanne', 'nsmarcia', 'nsangelo', 'nsrafaelsantos', 'nsleila', 'nslaura', 'nsdanimonteiro', 'nslucianaaguiar', 'nscarina', 'nselena', 'nsanapaula', 'nsleticiab', 'nssaraalves', 'nskarina', 'nsmariana', 'nightscouterika', 'nspoliana', 'nsmariapaula', 'nseuza', 'nsandrezza', 'nsmary', 'nsdavi', 'nsisadorasantos', 'nsizabela', 'nsgabrielad', 'nsrogerio', 'nsthielly', 'nightscoutdaniele', 'nspolianareinert', 'nsreginaldo', 'nspatricianobrega', 'nsluisamacedo', 'nsgraciela', 'nsmalheiros', 'nsdanielesilva', 'nsgeorgina', 'nsmarilda', 'talitadm1', 'nsclaudialopes', 'nsrhaissa', 'nsrosmar', 'nsdaianecalera', 'nsrenata', 'nsleolaine']
-#customers= ['nsday']
+customers = ['bubblemini']
+#removido outros customers por privacidade
+
 
 # dataframe com os dados brutos de todos os customers referente ao período desejado
 train_data = pd.DataFrame()
@@ -95,17 +95,75 @@ for col_name in ['hipo severa', 'hipo', 'alvo', 'hiper']:
 # 
 train_data_gr.drop(columns = 'alvo_count', inplace = True)
 
-# treinar modelo de classificação
+
+#############################################
+#           elbow technique
+#############################################
 from sklearn.cluster import KMeans
-model = KMeans(n_clusters = 3)
-# treino propriamente dito
-model.fit(train_data_gr[[col for col in train_data_gr.columns if col != 'day']])
+from sklearn.metrics import silhouette_score, davies_bouldin_score, calinski_harabasz_score
+
+# lista com todas as inércias
+inertias = []
+silhouette_scores = []
+davies_bouldin_scores = []
+calinski_harabasz_scores = []
+
+# 
+for n_clusters in range(2, 21):
+    # definição do modelo considerando n_clusters
+    n_model = KMeans(n_clusters = n_clusters)
+    # treino propriamente dito
+    n_model.fit(train_data_gr[[col for col in train_data_gr.columns if col != 'day']])
+    # 
+    if n_clusters == 6:
+        model = n_model
+    # inertia é o wscc (within cluster sum of squares)
+    inertias.append(n_model.inertia_)
+    # cálculos das métricas de eficiência do modelo
+    # it varies between -1 and 1; the higher the better;
+    score_of_silhouette = silhouette_score(train_data_gr[[col for col in train_data_gr.columns if col != 'day']], n_model.labels_)
+    # 
+    silhouette_scores.append(score_of_silhouette)
+    # the davies-bouldin index measures the average similarity between each cluster and its most similar cluster; lower values indicate better-defined clusters; the dbi ranges from 0 to infinity;
+    score_of_davies_bouldin = davies_bouldin_score(train_data_gr[[col for col in train_data_gr.columns if col != 'day']], n_model.labels_)
+    # 
+    davies_bouldin_scores.append(score_of_davies_bouldin)
+    # the calisnki-harabasz index measures the ratio of betewwn-cluster dispersion to within-cluster dispersion; higher values indicate better-defined and more compact clusters; 
+    score_of_calinski_harabasz = calinski_harabasz_score(train_data_gr[[col for col in train_data_gr.columns if col != 'day']], n_model.labels_)
+    # 
+    calinski_harabasz_scores.append(score_of_calinski_harabasz)
+
+
+# 
+from matplotlib import pyplot as plt
+
+# 
+elbow_scores_lists = [[inertias, 'Elbow analysis for choosing number of clusters;', 'Inertia', 'Number of clusters'], [silhouette_scores, 'Silhouette score analysis for choosing number of clusters;', 'Silhouette score', 'Number of clusters'], [davies_bouldin_scores, 'Davies bouldin score analysis for choosing number of clusters;', 'Davies bouldin score', 'Number of clusters'], [calinski_harabasz_scores, 'Calinski harabasz score analysis for choosing number of clusters;', 'Calinski harabasz score', 'Number of clusters']]
+
+for analysis in elbow_scores_lists:
+    # 
+    fig = plt.figure(figsize = (12, 7))
+    # 
+    plt.scatter([analysis[0].index(el) + 2 for el in analysis[0]], analysis[0])
+    # 
+    plt.title(analysis[1])
+    plt.ylabel(analysis[2])
+    plt.xlabel(analysis[3])
+    # 
+    plt.xticks([analysis[0].index(el) + 2 for el in analysis[0]])
+
+# ajustar a escala em x para ser inteira
+
+#############################################
+#       análise do modelo com 6 clusters
+#############################################
+
 # 
 train_data_gr['cluster'] = model.predict(train_data_gr[[col for col in train_data_gr.columns if col != 'day']])
 # 
 model.cluster_centers_
 
-# 
+#  
 # %matplotlib widget
 from matplotlib import pyplot as plt
 # from mpl_toolkits.mplot3d import Axes3D
@@ -120,6 +178,9 @@ if False:
 plt.scatter(train_data_gr.query('cluster == 0').sgv_std, train_data_gr.query('cluster == 0').sgv_mean, label = '0')
 plt.scatter(train_data_gr.query('cluster == 1').sgv_std, train_data_gr.query('cluster == 1').sgv_mean, label = '1')
 plt.scatter(train_data_gr.query('cluster == 2').sgv_std, train_data_gr.query('cluster == 2').sgv_mean, label = '2')
+plt.scatter(train_data_gr.query('cluster == 3').sgv_std, train_data_gr.query('cluster == 3').sgv_mean, label = '3')
+plt.scatter(train_data_gr.query('cluster == 4').sgv_std, train_data_gr.query('cluster == 4').sgv_mean, label = '4')
+plt.scatter(train_data_gr.query('cluster == 5').sgv_std, train_data_gr.query('cluster == 5').sgv_mean, label = '5')
 plt.xlabel('sgv_std')
 plt.ylabel('sgv_mean')
 plt.legend()
@@ -190,8 +251,10 @@ if False:
 plt.scatter(test_data_gr.query('cluster == 0').hiper, test_data_gr.query('cluster == 0').sgv_std, label = '0')
 plt.scatter(test_data_gr.query('cluster == 1').hiper, test_data_gr.query('cluster == 1').sgv_std, label = '1')
 plt.scatter(test_data_gr.query('cluster == 2').hiper, test_data_gr.query('cluster == 2').sgv_std, label = '2')
+plt.scatter(test_data_gr.query('cluster == 3').hiper, test_data_gr.query('cluster == 3').sgv_std, label = '3')
+plt.scatter(test_data_gr.query('cluster == 4').hiper, test_data_gr.query('cluster == 4').sgv_std, label = '4')
+plt.scatter(test_data_gr.query('cluster == 5').hiper, test_data_gr.query('cluster == 5').sgv_std, label = '5')
 plt.xlabel('hiper')
 plt.ylabel('sgv_std')
 plt.legend()
 #plt.title(f'Análise de resultados do dia {test_data.day.unique().tolist()[0]}')
-
